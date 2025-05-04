@@ -34,7 +34,7 @@ function ReservationsPage() {
       <div className="res-list">
         {reservations.length === 0 ? (
           <p style={{ textAlign: "center", color: "#636e72" }}>
-            Nenhuma reserva registrada para hoje.
+            Nenhuma reserva registrada para hoje...
           </p>
         ) : (
           reservations.map((res, index) => (
@@ -56,11 +56,11 @@ function ReservationsPage() {
                 </div>
                 <div>
                   <VideoProjector width={16} height={16} />
-                  <span>{res.datashow || "Nenhum Datashow"}</span>
+                  <span>{res.datashow || "Nenhum datashow"}</span>
                 </div>
                 <div>
                   <AntennaSignal width={16} height={16} />
-                  <span>{res.speaker || "Nenhuma Caixa de Som"}</span>
+                  <span>{res.speaker || "Nenhuma caixa de som"}</span>
                 </div>
               </div>
             </div>

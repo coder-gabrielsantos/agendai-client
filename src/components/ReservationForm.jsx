@@ -234,7 +234,7 @@ function ReservationForm() {
 
       {showSuccess && (
         <div className="success-message">
-          <FloppyDisk /> Reserva registrada com sucesso.
+          <FloppyDisk /> Reserva registrada com sucesso...
         </div>
       )}
 
