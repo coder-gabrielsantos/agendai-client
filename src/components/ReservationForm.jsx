@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useRef, useState} from "react";
 import Select from "react-select";
 import {
     Calendar,
@@ -9,25 +9,26 @@ import {
     NavArrowDown,
     FloppyDisk
 } from "iconoir-react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {createReservation} from "../api/index.js";
 
-const timeslotOptions = [...Array(9)].map((_, i) => ({
+const timeslotOptions = Array.from({length: 9}, (_, i) => ({
     value: i + 1,
     label: (
         <span>
       <span className="mono">{i + 1}</span>º horário
     </span>
-    )
+    ),
 }));
 
-const datashowOptions = [...Array(6)].map((_, i) => ({
+const datashowOptions = Array.from({length: 6}, (_, i) => ({
     value: `Datashow ${i + 1}`,
-    label: `Datashow ${i + 1}`
+    label: `Datashow ${i + 1}`,
 }));
 
-const speakerOptions = [...Array(4)].map((_, i) => ({
+const speakerOptions = Array.from({length: 4}, (_, i) => ({
     value: `Caixa ${i + 1}`,
-    label: `Caixa ${i + 1}`
+    label: `Caixa ${i + 1}`,
 }));
 
 function ReservationForm() {
@@ -36,7 +37,7 @@ function ReservationForm() {
         date: "",
         timeslot: [],
         datashow: null,
-        speaker: null
+        speaker: null,
     });
 
     const [showSuccess, setShowSuccess] = useState(false);
@@ -60,26 +61,51 @@ function ReservationForm() {
         new Intl.DateTimeFormat("pt-BR", {
             weekday: "long",
             day: "2-digit",
-            month: "2-digit"
+            month: "2-digit",
         }).format(date);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
+        const {name, value} = e.target;
+        setForm((prev) => ({...prev, [name]: value}));
     };
 
     const handleTimeslotChange = (selectedOptions) => {
-        setForm({ ...form, timeslot: selectedOptions });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
+        setForm((prev) => ({...prev, timeslot: selectedOptions}));
     };
 
     const openDatePicker = () => {
         dateInputRef.current?.showPicker?.();
+    };
+
+    const resetForm = () => {
+        setForm({
+            name: "",
+            date: "",
+            timeslot: [],
+            datashow: null,
+            speaker: null,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const payload = {
+            professorName: form.name,
+            date: form.date,
+            timeslots: form.timeslot.map((opt) => opt.value),
+            datashow: form.datashow?.value || null,
+            speaker: form.speaker?.value || null,
+        };
+
+        try {
+            await createReservation(payload);
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 2000);
+            resetForm();
+        } catch (err) {
+            console.error("Failed to create reservation", err);
+        }
     };
 
     return (
@@ -89,7 +115,9 @@ function ReservationForm() {
 
             <form className="form" onSubmit={handleSubmit}>
                 <label className="select-wrapper">
-                    <span className="label-icon"><User /> Nome do professor:</span>
+          <span className="label-icon">
+            <User/> Nome do professor:
+          </span>
                     <div className="select-icon-container">
                         <input
                             type="text"
@@ -102,7 +130,9 @@ function ReservationForm() {
                 </label>
 
                 <label className="select-wrapper">
-                    <span className="label-icon"><Calendar /> Dia da utilização:</span>
+          <span className="label-icon">
+            <Calendar/> Dia da utilização:
+          </span>
                     <div className="select-icon-container" onClick={openDatePicker}>
                         <input
                             ref={dateInputRef}
@@ -115,13 +145,17 @@ function ReservationForm() {
                             onKeyDown={(e) => e.preventDefault()}
                             required
                         />
-                        <NavArrowDown className="select-icon" />
+                        <NavArrowDown className="select-icon"/>
                     </div>
-                    <p className="hint">Você pode reservar até <strong>{formatLabelDate(maxDate)}</strong>.</p>
+                    <p className="hint">
+                        Você pode reservar até <strong>{formatLabelDate(maxDate)}</strong>.
+                    </p>
                 </label>
 
                 <label>
-                    <span className="label-icon"><Clock /> Horários:</span>
+          <span className="label-icon">
+            <Clock/> Horários:
+          </span>
                     <Select
                         isMulti
                         isSearchable={false}
@@ -136,13 +170,17 @@ function ReservationForm() {
                 </label>
 
                 <label>
-                    <span className="label-icon"><VideoProjector /> Datashow:</span>
+          <span className="label-icon">
+            <VideoProjector/> Datashow:
+          </span>
                     <Select
                         isSearchable={false}
                         name="datashow"
                         options={datashowOptions}
                         value={form.datashow}
-                        onChange={(selected) => setForm({ ...form, datashow: selected })}
+                        onChange={(selected) =>
+                            setForm((prev) => ({...prev, datashow: selected}))
+                        }
                         className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Nenhum"
@@ -150,13 +188,17 @@ function ReservationForm() {
                 </label>
 
                 <label>
-                    <span className="label-icon"><AntennaSignal /> Caixa de som:</span>
+          <span className="label-icon">
+            <AntennaSignal/> Caixa de som:
+          </span>
                     <Select
                         isSearchable={false}
                         name="speaker"
                         options={speakerOptions}
                         value={form.speaker}
-                        onChange={(selected) => setForm({ ...form, speaker: selected })}
+                        onChange={(selected) =>
+                            setForm((prev) => ({...prev, speaker: selected}))
+                        }
                         className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Nenhuma"
