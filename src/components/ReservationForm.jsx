@@ -1,0 +1,189 @@
+import React, { useRef, useState } from "react";
+import Select from "react-select";
+import {
+    Calendar,
+    User,
+    Clock,
+    VideoProjector,
+    AntennaSignal,
+    NavArrowDown,
+    FloppyDisk
+} from "iconoir-react";
+import { useNavigate } from "react-router-dom";
+
+const timeslotOptions = [...Array(9)].map((_, i) => ({
+    value: i + 1,
+    label: (
+        <span>
+      <span className="mono">{i + 1}</span>º horário
+    </span>
+    )
+}));
+
+const datashowOptions = [...Array(6)].map((_, i) => ({
+    value: `Datashow ${i + 1}`,
+    label: `Datashow ${i + 1}`
+}));
+
+const speakerOptions = [...Array(4)].map((_, i) => ({
+    value: `Caixa ${i + 1}`,
+    label: `Caixa ${i + 1}`
+}));
+
+function ReservationForm() {
+    const [form, setForm] = useState({
+        name: "",
+        date: "",
+        timeslot: [],
+        datashow: null,
+        speaker: null
+    });
+
+    const [showSuccess, setShowSuccess] = useState(false);
+    const dateInputRef = useRef(null);
+    const navigate = useNavigate();
+
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const maxDate = new Date(today);
+
+    if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0) {
+        const daysToMonday = (8 - dayOfWeek) % 7;
+        maxDate.setDate(today.getDate() + daysToMonday);
+    } else {
+        maxDate.setDate(today.getDate() + 1);
+    }
+
+    const formatDate = (date) => date.toISOString().split("T")[0];
+
+    const formatLabelDate = (date) =>
+        new Intl.DateTimeFormat("pt-BR", {
+            weekday: "long",
+            day: "2-digit",
+            month: "2-digit"
+        }).format(date);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
+
+    const handleTimeslotChange = (selectedOptions) => {
+        setForm({ ...form, timeslot: selectedOptions });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 2000);
+    };
+
+    const openDatePicker = () => {
+        dateInputRef.current?.showPicker?.();
+    };
+
+    return (
+        <>
+            <h1 className="title">Agendaí</h1>
+            <p className="subtitle">Datashows e caixas de som do IEMA</p>
+
+            <form className="form" onSubmit={handleSubmit}>
+                <label className="select-wrapper">
+                    <span className="label-icon"><User /> Nome do professor:</span>
+                    <div className="select-icon-container">
+                        <input
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                </label>
+
+                <label className="select-wrapper">
+                    <span className="label-icon"><Calendar /> Dia da utilização:</span>
+                    <div className="select-icon-container" onClick={openDatePicker}>
+                        <input
+                            ref={dateInputRef}
+                            type="date"
+                            name="date"
+                            value={form.date}
+                            onChange={handleChange}
+                            min={formatDate(today)}
+                            max={formatDate(maxDate)}
+                            onKeyDown={(e) => e.preventDefault()}
+                            required
+                        />
+                        <NavArrowDown className="select-icon" />
+                    </div>
+                    <p className="hint">Você pode reservar até <strong>{formatLabelDate(maxDate)}</strong>.</p>
+                </label>
+
+                <label>
+                    <span className="label-icon"><Clock /> Horários:</span>
+                    <Select
+                        isMulti
+                        isSearchable={false}
+                        name="timeslot"
+                        options={timeslotOptions}
+                        value={form.timeslot}
+                        onChange={handleTimeslotChange}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Selecione os horários"
+                    />
+                </label>
+
+                <label>
+                    <span className="label-icon"><VideoProjector /> Datashow:</span>
+                    <Select
+                        isSearchable={false}
+                        name="datashow"
+                        options={datashowOptions}
+                        value={form.datashow}
+                        onChange={(selected) => setForm({ ...form, datashow: selected })}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Nenhum"
+                    />
+                </label>
+
+                <label>
+                    <span className="label-icon"><AntennaSignal /> Caixa de som:</span>
+                    <Select
+                        isSearchable={false}
+                        name="speaker"
+                        options={speakerOptions}
+                        value={form.speaker}
+                        onChange={(selected) => setForm({ ...form, speaker: selected })}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Nenhuma"
+                    />
+                </label>
+
+                <div className="button-group">
+                    <button type="submit" className="submit-button">
+                        Reservar
+                    </button>
+                    <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() => navigate("/reservas")}
+                    >
+                        Visualizar reservas
+                    </button>
+                </div>
+            </form>
+
+            {showSuccess && (
+                <div className="success-message">
+                    <FloppyDisk /> Reserva registrada com sucesso...
+                </div>
+            )}
+        </>
+    );
+}
+
+export default ReservationForm;
