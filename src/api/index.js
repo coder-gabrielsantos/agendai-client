@@ -6,7 +6,16 @@ export async function createReservation(reservationData) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(reservationData),
     });
-    return await response.json();
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const error = new Error(data.error || "Failed to create reservation");
+        error.code = data.code || response.status;
+        throw error;
+    }
+
+    return data;
 }
 
 export async function getReservations() {
