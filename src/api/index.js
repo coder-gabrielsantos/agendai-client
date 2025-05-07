@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://agendai-server.onrender.com";
 
 export async function createReservation(reservationData) {
     const response = await fetch(`${API_BASE_URL}/reservations`, {
