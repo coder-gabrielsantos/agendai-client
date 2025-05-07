@@ -27,8 +27,8 @@ const datashowOptions = Array.from({ length: 6 }, (_, i) => ({
 }));
 
 const speakerOptions = Array.from({ length: 4 }, (_, i) => ({
-  value: `Caixa ${i + 1}`,
-  label: `Caixa ${i + 1}`,
+  value: `Caixa de som ${i + 1}`,
+  label: `Caixa de som ${i + 1}`,
 }));
 
 function ReservationForm() {
