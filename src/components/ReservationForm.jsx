@@ -96,7 +96,7 @@ function ReservationForm() {
 
     if (!hasHorarios && !hasRecursos) {
       setErrorMessage("Selecione pelo menos um horário ou um recurso...");
-      setTimeout(() => setErrorMessage(""), 5000);
+      setTimeout(() => setErrorMessage(""), 2000);
       return;
     }
 
@@ -113,7 +113,7 @@ function ReservationForm() {
       setErrorMessage("");
       setShowSuccess(true);
       resetForm();
-      setTimeout(() => setShowSuccess(false), 5000);
+      setTimeout(() => setShowSuccess(false), 2000);
     } catch (err) {
       setShowSuccess(false);
       setForm((prev) => ({
@@ -125,7 +125,7 @@ function ReservationForm() {
       setErrorMessage(
           "Este recurso já está reservado para o(s) horário(s) escolhido(s)..."
       );
-      setTimeout(() => setErrorMessage(""), 5000);
+      setTimeout(() => setErrorMessage(""), 2000);
     }
   };
 
