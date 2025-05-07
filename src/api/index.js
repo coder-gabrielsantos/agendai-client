@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://agendai-server.onrender.com";
+const API_BASE_URL = "https://agendai-server.vercel.app";
 
 export async function createReservation(reservationData) {
     const response = await fetch(`${API_BASE_URL}/reservations`, {
