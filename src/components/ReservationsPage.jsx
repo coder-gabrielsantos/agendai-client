@@ -11,7 +11,7 @@ function ReservationsPage() {
       .catch((error) => {
         console.error("Failed to fetch reservations:", error);
       });
-  }, []);
+    }, []);
 
   const formatTimeslots = (slots) => {
     const list = slots.map((h) => `${h}º`);
@@ -43,10 +43,10 @@ function ReservationsPage() {
                 <h2 title={`Prof. ${res.professorName}`}>
                   Prof. {res.professorName}
                 </h2>
-                <span className="res-date">
-                  <Calendar width={16} height={16} />
-                  {new Date(res.date).toLocaleDateString("pt-BR")}
-                </span>
+                  <span className="res-date">
+                    <Calendar width={16} height={16} />
+                      {res.date.split("-").reverse().join("/")}
+                    </span>
               </div>
 
               <div className="res-info">
