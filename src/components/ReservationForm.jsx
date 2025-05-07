@@ -91,6 +91,15 @@ function ReservationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const hasHorarios = form.timeslot.length > 0;
+    const hasRecursos = form.datashow || form.speaker;
+
+    if (!hasHorarios && !hasRecursos) {
+      setErrorMessage("Selecione pelo menos um horário ou um recurso...");
+      setTimeout(() => setErrorMessage(""), 5000);
+      return;
+    }
+
     const payload = {
       professorName: form.name,
       date: form.date,
@@ -104,8 +113,7 @@ function ReservationForm() {
       setErrorMessage("");
       setShowSuccess(true);
       resetForm();
-      setTimeout(() => setShowSuccess(false), 2000);
-      // eslint-disable-next-line no-unused-vars
+      setTimeout(() => setShowSuccess(false), 5000);
     } catch (err) {
       setShowSuccess(false);
       setForm((prev) => ({
@@ -115,9 +123,9 @@ function ReservationForm() {
         speaker: null,
       }));
       setErrorMessage(
-        "Este recurso já está reservado para o(s) horário(s) escolhido(s)."
+          "Este recurso já está reservado para o(s) horário(s) escolhido(s)..."
       );
-      setTimeout(() => setErrorMessage(""), 3000);
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
 
