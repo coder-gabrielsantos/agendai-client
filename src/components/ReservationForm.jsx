@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useState, useRef} from "react";
 import Select from "react-select";
 import {
   Calendar,
@@ -10,7 +10,7 @@ import {
   FloppyDisk,
 } from "iconoir-react";
 import { useNavigate } from "react-router-dom";
-import { createReservation } from "../api/index";
+import { createReservation, getAvailableResources } from "../api/index";
 
 const timeslotOptions = Array.from({ length: 9 }, (_, i) => ({
   value: i + 1,
@@ -19,16 +19,6 @@ const timeslotOptions = Array.from({ length: 9 }, (_, i) => ({
       <span className="mono">{i + 1}</span>º horário
     </span>
   ),
-}));
-
-const datashowOptions = Array.from({ length: 6 }, (_, i) => ({
-  value: `Datashow ${i + 1}`,
-  label: `Datashow ${i + 1}`,
-}));
-
-const speakerOptions = Array.from({ length: 4 }, (_, i) => ({
-  value: `Caixa de som ${i + 1}`,
-  label: `Caixa de som ${i + 1}`,
 }));
 
 function ReservationForm() {
@@ -40,6 +30,8 @@ function ReservationForm() {
     speaker: null,
   });
 
+  const [availableDatashows, setAvailableDatashows] = useState([]);
+  const [availableSpeakers, setAvailableSpeakers] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const dateInputRef = useRef(null);
@@ -71,7 +63,12 @@ function ReservationForm() {
   };
 
   const handleTimeslotChange = (selectedOptions) => {
-    setForm((prev) => ({ ...prev, timeslot: selectedOptions }));
+    setForm((prev) => ({
+      ...prev,
+      timeslot: selectedOptions,
+      datashow: null,
+      speaker: null,
+    }));
   };
 
   const openDatePicker = () => {
@@ -86,6 +83,16 @@ function ReservationForm() {
       datashow: null,
       speaker: null,
     });
+  };
+
+  const handleResourceFocus = async () => {
+    if (form.timeslot.length === 0 || !form.date) return;
+
+    const times = form.timeslot.map((opt) => opt.value);
+    const { datashows, speakers } = await getAvailableResources(form.date, times);
+
+    setAvailableDatashows(datashows);
+    setAvailableSpeakers(speakers);
   };
 
   const handleSubmit = async (e) => {
@@ -114,6 +121,7 @@ function ReservationForm() {
       setShowSuccess(true);
       resetForm();
       setTimeout(() => setShowSuccess(false), 2000);
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setShowSuccess(false);
       setForm((prev) => ({
@@ -128,6 +136,9 @@ function ReservationForm() {
       setTimeout(() => setErrorMessage(""), 2000);
     }
   };
+
+  const isDateAndTimeslotNotInformed =
+      form.date === "" || form.timeslot.length === 0;
 
   return (
     <>
@@ -169,7 +180,7 @@ function ReservationForm() {
             <NavArrowDown className="select-icon" />
           </div>
           <p className="hint">
-            Você pode reservar até <strong>{formatLabelDate(maxDate)}</strong>.
+            Você pode reservar até <strong>{formatLabelDate(maxDate)}</strong>
           </p>
         </label>
 
@@ -195,16 +206,23 @@ function ReservationForm() {
             <VideoProjector /> Datashow:
           </span>
           <Select
-            isSearchable={false}
-            name="datashow"
-            options={datashowOptions}
-            value={form.datashow}
-            onChange={(selected) =>
-              setForm((prev) => ({ ...prev, datashow: selected }))
-            }
-            className="react-select-container"
-            classNamePrefix="react-select"
-            placeholder="Nenhum"
+              isDisabled={isDateAndTimeslotNotInformed}
+              isSearchable={false}
+              name="datashow"
+              options={availableDatashows.map((d) => ({ value: d, label: d }))}
+              value={form.datashow}
+              onChange={(selected) =>
+                  setForm((prev) => ({ ...prev, datashow: selected }))
+              }
+              onFocus={handleResourceFocus}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              placeholder={isDateAndTimeslotNotInformed ? "Informe a data e horários" : ""}
+              noOptionsMessage={() =>
+                  isDateAndTimeslotNotInformed
+                      ? "Informe a data e horários"
+                      : "Nenhum datashow disponível"
+              }
           />
         </label>
 
@@ -213,16 +231,23 @@ function ReservationForm() {
             <AntennaSignal /> Caixa de som:
           </span>
           <Select
-            isSearchable={false}
-            name="speaker"
-            options={speakerOptions}
-            value={form.speaker}
-            onChange={(selected) =>
-              setForm((prev) => ({ ...prev, speaker: selected }))
-            }
-            className="react-select-container"
-            classNamePrefix="react-select"
-            placeholder="Nenhuma"
+              isDisabled={isDateAndTimeslotNotInformed}
+              isSearchable={false}
+              name="speaker"
+              options={availableSpeakers.map((s) => ({ value: s, label: s }))}
+              value={form.speaker}
+              onChange={(selected) =>
+                  setForm((prev) => ({ ...prev, speaker: selected }))
+              }
+              onFocus={handleResourceFocus}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              placeholder={isDateAndTimeslotNotInformed ? "Informe a data e horários" : ""}
+              noOptionsMessage={() =>
+                  isDateAndTimeslotNotInformed
+                      ? "Informe a data e horários"
+                      : "Nenhuma caixa de som disponível"
+              }
           />
         </label>
 

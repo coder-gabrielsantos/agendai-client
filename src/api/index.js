@@ -22,3 +22,12 @@ export async function getReservations() {
     const response = await fetch(`${API_BASE_URL}/reservations`);
     return await response.json();
 }
+
+export async function getAvailableResources(date, timeslots) {
+    const response = await fetch(`${API_BASE_URL}/reservations/available`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, timeslots }),
+    });
+    return await response.json();
+}
