@@ -347,6 +347,45 @@ label {
 }
 
 /* ========================
+   Paginação
+======================== */
+.pagination {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.pagination button {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    padding: 3px 8px 0 8px;
+    transition: all 0.3s ease;
+}
+
+.pagination button:disabled {
+    cursor: default;
+}
+
+.pagination .left:hover:not(:disabled) {
+    transform: translateX(-2px);
+}
+
+.pagination .right:hover:not(:disabled) {
+    transform: translateX(2px);
+}
+
+.pagination span {
+    color: #2d3436;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* ========================
    Animações
 ======================== */
 @keyframes fadeIn {
