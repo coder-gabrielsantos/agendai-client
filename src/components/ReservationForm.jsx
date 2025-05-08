@@ -7,7 +7,6 @@ import {
   VideoProjector,
   AntennaSignal,
   NavArrowDown,
-  FloppyDisk,
 } from "iconoir-react";
 import { useNavigate } from "react-router-dom";
 import { createReservation, getAvailableResources } from "../api/index";
@@ -32,8 +31,8 @@ function ReservationForm() {
 
   const [availableDatashows, setAvailableDatashows] = useState([]);
   const [availableSpeakers, setAvailableSpeakers] = useState([]);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const dateInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -117,21 +116,21 @@ function ReservationForm() {
 
     try {
       await createReservation(payload);
+      setSuccessMessage("Reserva registrada...");
       setErrorMessage("");
-      setShowSuccess(true);
       resetForm();
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => setSuccessMessage(""), 2000);
       // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      setShowSuccess(false);
       setForm((prev) => ({
         ...prev,
         timeslot: [],
         datashow: null,
         speaker: null,
       }));
+      setSuccessMessage("");
       setErrorMessage(
-          "Este recurso já está reservado para o(s) horário(s) escolhido(s)..."
+          "Recurso já reservado..."
       );
       setTimeout(() => setErrorMessage(""), 2000);
     }
@@ -252,8 +251,22 @@ function ReservationForm() {
         </label>
 
         <div className="button-group">
-          <button type="submit" className="submit-button">
-            Reservar
+          <button
+            type="submit"
+            className={`submit-button ${successMessage ? "success" : ""} ${errorMessage ? "error" : ""}`}
+          >
+            {successMessage ? (
+                <>
+                  Reserva registrada...
+                </>
+            ) : errorMessage ? (
+                <>
+                  Conflito na reserva...
+                </>
+            ) : (
+                "Reservar"
+            )}
+
           </button>
           <button
             type="button"
@@ -264,21 +277,6 @@ function ReservationForm() {
           </button>
         </div>
       </form>
-
-      {showSuccess && (
-        <div className="success-message">
-          <FloppyDisk /> Reserva registrada com sucesso...
-        </div>
-      )}
-
-      {errorMessage && (
-        <div
-          className="success-message"
-          style={{ borderLeftColor: "#d63031", color: "#d63031" }}
-        >
-          ❌ {errorMessage}
-        </div>
-      )}
     </>
   );
 }

@@ -293,6 +293,14 @@ label {
     text-align: center;
 }
 
+.submit-button.success {
+    background-color: #00b894;
+}
+
+.submit-button.error {
+    background-color: #d63031;
+}
+
 /* ========================
    Fonte Monoespaçada
 ======================== */
