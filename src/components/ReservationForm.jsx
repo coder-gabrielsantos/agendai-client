@@ -36,7 +36,7 @@ function ReservationForm() {
   const dateInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const today = new Date();
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
   const dayOfWeek = today.getDay();
   const maxDate = new Date(today);
 
