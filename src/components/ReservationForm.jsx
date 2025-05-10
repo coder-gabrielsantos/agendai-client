@@ -31,6 +31,7 @@ function ReservationForm() {
 
   const [availableDatashows, setAvailableDatashows] = useState([]);
   const [availableSpeakers, setAvailableSpeakers] = useState([]);
+  const [isLoadingResources, setIsLoadingResources] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const dateInputRef = useRef(null);
@@ -87,11 +88,18 @@ function ReservationForm() {
   const handleResourceFocus = async () => {
     if (form.timeslot.length === 0 || !form.date) return;
 
-    const times = form.timeslot.map((opt) => opt.value);
-    const { datashows, speakers } = await getAvailableResources(form.date, times);
+    setIsLoadingResources(true);
 
-    setAvailableDatashows(datashows);
-    setAvailableSpeakers(speakers);
+    try {
+      const times = form.timeslot.map((opt) => opt.value);
+      const { datashows, speakers } = await getAvailableResources(form.date, times);
+      setAvailableDatashows(datashows);
+      setAvailableSpeakers(speakers);
+    } catch (err) {
+      console.error("Erro ao carregar recursos: ", err);
+    } finally {
+      setIsLoadingResources(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -207,6 +215,7 @@ function ReservationForm() {
           <Select
               isDisabled={isDateAndTimeslotNotInformed}
               isSearchable={false}
+              isLoading={isLoadingResources}
               name="datashow"
               options={availableDatashows.map((d) => ({ value: d, label: d }))}
               value={form.datashow}
@@ -232,6 +241,7 @@ function ReservationForm() {
           <Select
               isDisabled={isDateAndTimeslotNotInformed}
               isSearchable={false}
+              isLoading={isLoadingResources}
               name="speaker"
               options={availableSpeakers.map((s) => ({ value: s, label: s }))}
               value={form.speaker}

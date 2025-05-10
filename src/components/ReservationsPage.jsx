@@ -58,7 +58,7 @@ function ReservationsPage() {
         + Fazer nova reserva
       </button>
       {loading ? (
-          <p style={{ textAlign: "center", color: "#636e72" }}>Carregando reservas...</p>
+          <div className="loader" />
       ) : (
           <div className="res-list">
             {currentReservations.length === 0 ? (
