@@ -88,7 +88,7 @@ function ReservationsPage() {
                     </div>
                     <div>
                       <AntennaSignal width={16} height={16} />
-                      <span>{res.speaker || "...."}</span>
+                      <span>{res.speaker || "..."}</span>
                     </div>
                   </div>
                 </div>
