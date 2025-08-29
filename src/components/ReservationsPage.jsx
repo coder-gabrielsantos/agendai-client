@@ -193,7 +193,6 @@ function ReservationsPage() {
             </h3>
             <p style={{margin: "8px 0 12px", color: "#2d3436"}}>
               Atenção: exclua esta reserva apenas se tiver sido feita por você.
-              Caso contrário, mantenha o registro para não prejudicar o agendamento de outros professores.
               <br/>
               <small style={{color: "#636e72"}}>
                 Essa ação não pode ser desfeita.
