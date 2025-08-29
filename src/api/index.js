@@ -31,3 +31,19 @@ export async function getAvailableResources(date, timeslots) {
     });
     return await response.json();
 }
+
+export async function deleteReservation(id) {
+    const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
+        method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const error = new Error(data.error || "Failed to delete reservation");
+        error.code = data.code || response.status;
+        throw error;
+    }
+
+    return data; // { message: "Reservation deleted successfully" }
+}
